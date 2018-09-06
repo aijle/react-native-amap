@@ -22,11 +22,6 @@ public class AMapPackage implements ReactPackage {
     }
 
     @Override
-    public List<Class<? extends JavaScriptModule>> createJSModules() {
-        return Collections.emptyList();
-    }
-
-    @Override
     public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
         AMapCalloutManager calloutManager = new AMapCalloutManager();
         AMapMarkerManager annotationManager = new AMapMarkerManager();

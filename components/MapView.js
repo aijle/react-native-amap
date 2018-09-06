@@ -1,9 +1,7 @@
 'use strict';
 
 var React = require('react');
-var {
-  PropTypes,
-} = React;
+var PropTypes = require('prop-types');
 var ReactNative = require('react-native');
 var {
   EdgeInsetsPropType,
@@ -21,8 +19,8 @@ var MapPolyline = require('./MapPolyline');
 var MapPolygon = require('./MapPolygon');
 var MapCircle = require('./MapCircle');
 var MapCallout = require('./MapCallout');
-
-var MapView = React.createClass({
+var createClass = require('create-react-class');
+var MapView = createClass({
   mixins: [NativeMethodsMixin],
 
   viewConfig: {

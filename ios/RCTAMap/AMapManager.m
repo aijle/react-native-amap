@@ -7,19 +7,19 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTViewManager.h"
+#import <React/RCTViewManager.h>
 #import "AMapManager.h"
 
-#import "RCTBridge.h"
-#import "RCTUIManager.h"
+#import <React/RCTBridge.h>
+#import <React/RCTUIManager.h>
 #import "RCTConvert+CoreLocation.h"
 #import "RCTConvert+AMapKit.h"
-#import "RCTEventDispatcher.h"
+#import <React/RCTEventDispatcher.h>
 #import "AMap.h"
-#import "UIView+React.h"
+#import <React/UIView+React.h>
 #import "AMapMarker.h"
-#import "RCTViewManager.h"
-#import "RCTConvert.h"
+#import <React/RCTViewManager.h>
+#import <React/RCTConvert.h>
 #import "AMapPolyline.h"
 #import "AMapPolygon.h"
 #import "AMapCircle.h"

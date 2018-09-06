@@ -7,14 +7,14 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import <AMapSearchKit/AMapSearchKit.h>
-
 #import "AMap.h"
 
-#import "RCTEventDispatcher.h"
-#import "RCTUtils.h"
+#import <AMapFoundationKit/AMapFoundationKit.h>
+#import <AMapSearchKit/AMapSearchKit.h>
+#import <React/RCTEventDispatcher.h>
+#import <React/RCTUtils.h>
 #import "AMapMarker.h"
-#import "UIView+React.h"
+#import <React/UIView+React.h>
 #import "AMapPolyline.h"
 #import "AMapPolygon.h"
 #import "AMapCircle.h"
@@ -103,8 +103,7 @@ const CGFloat AMapZoomBoundBuffer = 0.01;
 }
 
 - (void) createMap {
-    [MAMapServices sharedServices].apiKey = _apiKey;
-    [AMapSearchServices sharedServices].apiKey = _apiKey;
+    [AMapServices sharedServices].apiKey = _apiKey;
     _mapView = [[MAMapView alloc] initWithFrame:self.bounds];
 
     // MAMapView doesn't report tap events, so we attach gesture recognizers to it

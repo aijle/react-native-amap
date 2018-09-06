@@ -12,10 +12,10 @@
 #import <MAMapKit/MAMapKit.h>
 #import "RCTConvert+AMapKit.h"
 #import "AMap.h"
-#import "RCTComponent.h"
-#import "RCTView.h"
+#import <React/RCTComponent.h>
+#import <React/RCTView.h>
 #import "SMCalloutView.h"
-#import "RCTEventDispatcher.h"
+#import <React/RCTEventDispatcher.h>
 
 #define MAP_PROP_UPDATE(prop_type, prop_name) \
 - (void)set##prop_name:(prop_type)set_val { _##prop_name = set_val; [self updateMap]; } \

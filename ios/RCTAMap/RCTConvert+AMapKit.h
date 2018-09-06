@@ -6,7 +6,7 @@
 //  Copyright © 2016年 dianowba. All rights reserved.
 //
 
-#import "RCTConvert.h"
+#import <React/RCTConvert.h>
 #import "AMapCoordinate.h"
 #import <MAMapKit/MAMapKit.h>
 #import <AMapSearchKit/AMapSearchKit.h>

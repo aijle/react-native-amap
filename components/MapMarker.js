@@ -1,10 +1,7 @@
 "use strict"
 
 var React = require("react")
-var {
-    PropTypes,
-} = React
-
+var PropTypes = require('prop-types');
 var ReactNative = require("react-native")
 var {
     View,
@@ -15,11 +12,11 @@ var {
     NativeModules,
     Animated,
 } = ReactNative
-
+var createClass = require('create-react-class');
 var resolveAssetSource = require("react-native/Libraries/Image/resolveAssetSource")
 var AMapMarker = requireNativeComponent("AMapMarker", MapMarker)
 
-var MapMarker = React.createClass({
+var MapMarker = createClass({
     mixins: [NativeMethodsMixin],
 
     viewConfig: {

@@ -6,7 +6,7 @@
 //  Copyright © 2016年 dianowba. All rights reserved.
 //
 
-#import "RCTBridgeModule.h"
+#import <React/RCTBridgeModule.h>
 #import <AMapSearchKit/AMapSearchKit.h>
 
 @interface AMapSearchManager : NSObject <RCTBridgeModule, AMapSearchDelegate>

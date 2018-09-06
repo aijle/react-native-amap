@@ -13,8 +13,8 @@
 #import <MAMapKit/MAMapKit.h>
 #import <UIKit/UIKit.h>
 
-#import "RCTConvert+MapKit.h"
-#import "RCTComponent.h"
+#import "RCTConvert+AMapKit.h"
+#import <React/RCTComponent.h>
 #import "AMap.h"
 #import "SMCalloutView.h"
 

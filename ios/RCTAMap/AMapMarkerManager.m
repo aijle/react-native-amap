@@ -9,9 +9,9 @@
 
 #import "AMapMarkerManager.h"
 
-#import "RCTUIManager.h"
+#import <React/RCTUIManager.h>
 #import "RCTConvert+CoreLocation.h"
-#import "UIView+React.h"
+#import <React/UIView+React.h>
 #import "AMapMarker.h"
 
 @interface AMapMarkerManager () <MAMapViewDelegate>

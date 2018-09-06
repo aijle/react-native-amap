@@ -1,7 +1,5 @@
 var React = require('react');
-var {
-  PropTypes,
-} = React;
+var PropTypes = require('prop-types');
 
 var ReactNative = require('react-native');
 var {
@@ -10,8 +8,8 @@ var {
   requireNativeComponent,
   StyleSheet,
 } = ReactNative;
-
-var MapPolygon = React.createClass({
+var createClass = require('create-react-class');
+var MapPolygon = createClass({
   mixins: [NativeMethodsMixin],
 
   propTypes: {

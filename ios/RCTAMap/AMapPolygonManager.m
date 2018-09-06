@@ -9,14 +9,14 @@
 
 #import "AMapPolygonManager.h"
 
-#import "RCTBridge.h"
-#import "RCTConvert.h"
+#import <React/RCTBridge.h>
+#import <React/RCTConvert.h>
 #import "RCTConvert+AMapKit.h"
 #import "RCTConvert+CoreLocation.h"
-#import "RCTEventDispatcher.h"
-#import "UIView+React.h"
+#import <React/RCTEventDispatcher.h>
+#import <React/UIView+React.h>
 #import "AMapMarker.h"
-#import "RCTViewManager.h"
+#import <React/RCTViewManager.h>
 #import "AMapPolygon.h"
 
 @interface AMapPolygonManager()
