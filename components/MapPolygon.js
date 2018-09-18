@@ -7,13 +7,14 @@ var {
   NativeMethodsMixin,
   requireNativeComponent,
   StyleSheet,
+  ViewPropTypes
 } = ReactNative;
 var createClass = require('create-react-class');
 var MapPolygon = createClass({
   mixins: [NativeMethodsMixin],
 
   propTypes: {
-    ...View.propTypes,
+    ...ViewPropTypes,
 
     /**
      * An array of coordinates to describe the polygon

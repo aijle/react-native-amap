@@ -12,6 +12,7 @@ var {
   Animated,
   requireNativeComponent,
   NativeModules,
+  ViewPropTypes
 } = ReactNative;
 
 var MapMarker = require('./MapMarker');
@@ -31,9 +32,9 @@ var MapView = createClass({
   },
 
   propTypes: {
-      ...View.propTypes,
+      ...ViewPropTypes,
 
-      style: View.propTypes.style,
+      style: ViewPropTypes.style,
 
       /**
        * [apiKey amap's apiKey]

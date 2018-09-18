@@ -8,6 +8,7 @@ var {
   NativeMethodsMixin,
   requireNativeComponent,
   StyleSheet,
+  ViewPropTypes
 } = ReactNative;
 var createClass = require('create-react-class');
 
@@ -15,7 +16,7 @@ var MapCircle = createClass({
   mixins: [NativeMethodsMixin],
 
   propTypes: {
-    ...View.propTypes,
+    ...ViewPropTypes,
 
     /**
      * The coordinate of the center of the circle

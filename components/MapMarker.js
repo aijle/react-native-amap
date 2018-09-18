@@ -11,6 +11,7 @@ var {
     Platform,
     NativeModules,
     Animated,
+    ViewPropTypes
 } = ReactNative
 var createClass = require('create-react-class');
 var resolveAssetSource = require("react-native/Libraries/Image/resolveAssetSource")
@@ -27,7 +28,7 @@ var MapMarker = createClass({
     },
 
     propTypes: {
-        ...View.propTypes,
+        ...ViewPropTypes,
 
         // TODO(lmr): get rid of these?
         identifier: PropTypes.string,
