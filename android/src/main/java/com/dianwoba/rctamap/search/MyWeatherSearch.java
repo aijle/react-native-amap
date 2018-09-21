@@ -20,6 +20,7 @@ class MyWeatherSearch extends AMapSearch implements WeatherSearch.OnWeatherSearc
 
     public MyWeatherSearch(Context context, String requestId) {
         weatherSearch = new WeatherSearch(context);
+        weatherSearch.setOnWeatherSearchListener(this);
         this.setRequestId(requestId);
     }
 

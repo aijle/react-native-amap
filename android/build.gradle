@@ -1,8 +1,8 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.2"
+    compileSdkVersion 27
+    buildToolsVersion "27.0.3"
 
     defaultConfig {
         minSdkVersion 16
@@ -20,24 +20,27 @@ android {
 buildscript {
     repositories {
         jcenter()
+        google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.1.0'
+        classpath 'com.android.tools.build:gradle:2.3.3'
     }
 }
 
+println "$projectDir"
 
 allprojects {
     repositories {
         jcenter()
         maven { url "$projectDir/../node_modules/react-native/android" }
+        maven { url "$projectDir/../../react-native/android" }
+        google()
     }
 }
 
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:23.1.0'
-    compile files('libs/AMap_2DMap_V2.8.1_20160202.jar')
-    compile files('libs/AMap_Search_V3.2.1_20160308.jar')
+    compile 'com.android.support:appcompat-v7:27.0.1'
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.facebook.react:react-native:+'
 }

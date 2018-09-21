@@ -121,6 +121,16 @@ RCT_EXPORT_METHOD(regeocodeSearch:(NSString *)requestId location:(AMapGeoPoint *
     [_search AMapReGoecodeSearch:request];
 }
 
+RCT_EXPORT_METHOD(distanceSearch:(NSString *)requestId latLonPoints:(NSArray *)latLonPoints dest:(AMapGeoPoint *)dest searchType:(NSInteger)searchType)
+{
+    AMapDistanceSearchRequest *request = [[AMapDistanceSearchRequest alloc]init];
+    request.origins = latLonPoints;
+    request.destination = dest;
+    request.type = searchType;
+    request.requestId = requestId;
+    [_search AMapDistanceSearch:request];
+}
+
 RCT_EXPORT_METHOD(walkingRouteSearch:(NSString *)requestId fromOrigin:(AMapGeoPoint *)origin to:(AMapGeoPoint *)destination with:(NSInteger)strategy)
 {
     AMapWalkingRouteSearchRequest *request = [[AMapWalkingRouteSearchRequest alloc]init];
@@ -249,6 +259,27 @@ RCT_EXPORT_METHOD(walkingRouteSearch:(NSString *)requestId fromOrigin:(AMapGeoPo
         [arr addObject:n];
     }
     
+    [self.bridge.eventDispatcher sendAppEventWithName:@"ReceiveAMapSearchResult" body:@{
+                                                                                        @"requestId":request.requestId, @"data":arr}];
+}
+
+-(void)onDistanceSearchDone:(AMapDistanceSearchRequest*)request response:(AMapDistanceSearchResponse*)response {
+    NSMutableArray *arr = [[NSMutableArray alloc] init];
+
+    if(response.results != nil) {
+        [response.results enumerateObjectsUsingBlock:^(AMapDistanceResult * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            NSDictionary* n = @{
+                                @"destId": @(obj.destID),
+                                @"distance": @(obj.distance),
+                                @"duration": @(obj.duration),
+                                @"code": @(obj.code),
+                                @"info": obj.info,
+                                @"originId": @(obj.originID)
+                                };
+            [arr addObject:n];
+        }];
+    }
+
     [self.bridge.eventDispatcher sendAppEventWithName:@"ReceiveAMapSearchResult" body:@{
                                                                                         @"requestId":request.requestId, @"data":arr}];
 }

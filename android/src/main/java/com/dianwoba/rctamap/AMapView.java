@@ -25,6 +25,7 @@ import com.amap.api.maps2d.model.LatLngBounds;
 import com.amap.api.maps2d.model.Marker;
 import com.amap.api.maps2d.model.Polygon;
 import com.amap.api.maps2d.model.Polyline;
+import com.amap.api.services.core.AMapException;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.NoSuchKeyException;
 import com.facebook.react.bridge.ReadableMap;
@@ -281,20 +282,25 @@ public class AMapView extends MapView implements AMap.InfoWindowAdapter,
             Log.e("AMap", e.getMessage());
         }
 
-        LatLngBounds bounds = new LatLngBounds(
-                new LatLng(lat - latDelta / 2, lng - lngDelta / 2), // southwest
-                new LatLng(lat + latDelta / 2, lng + lngDelta / 2)  // northeast
-        );
-        if (super.getHeight() <= 0 || super.getWidth() <= 0) {
-            // in this case, our map has not been laid out yet, so we save the bounds in a local
-            // variable, and make a guess of zoomLevel 10. Not to worry, though: as soon as layout
-            // occurs, we will move the camera to the saved bounds. Note that if we tried to move
-            // to the bounds now, it would trigger an exception.
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), zoomLevel));
-            boundsToMove = bounds;
-        } else {
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), zoomLevel));
+        try {
+            LatLngBounds bounds = new LatLngBounds(
+                    new LatLng(lat - latDelta / 2, lng - lngDelta / 2), // southwest
+                    new LatLng(lat + latDelta / 2, lng + lngDelta / 2)  // northeast
+            );
+            if (super.getHeight() <= 0 || super.getWidth() <= 0) {
+                // in this case, our map has not been laid out yet, so we save the bounds in a local
+                // variable, and make a guess of zoomLevel 10. Not to worry, though: as soon as layout
+                // occurs, we will move the camera to the saved bounds. Note that if we tried to move
+                // to the bounds now, it would trigger an exception.
+                map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), zoomLevel));
+                boundsToMove = bounds;
+            } else {
+                map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), zoomLevel));
 //            map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 0));
+                boundsToMove = null;
+            }
+        } catch (com.amap.api.maps2d.AMapException e) {
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), zoomLevel));
             boundsToMove = null;
         }
     }

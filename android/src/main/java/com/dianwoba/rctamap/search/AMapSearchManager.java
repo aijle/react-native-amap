@@ -5,13 +5,18 @@ import com.amap.api.services.geocoder.GeocodeQuery;
 import com.amap.api.services.geocoder.GeocodeSearch;
 import com.amap.api.services.geocoder.RegeocodeQuery;
 import com.amap.api.services.help.InputtipsQuery;
+import com.amap.api.services.route.DistanceSearch;
 import com.amap.api.services.weather.WeatherSearchQuery;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -68,5 +73,22 @@ public class AMapSearchManager extends ReactContextBaseJavaModule {
         RegeocodeQuery query = new RegeocodeQuery(point, radius != null?radius:1000, GeocodeSearch.AMAP);
 
         request.geocodeSearch.getFromLocationAsyn(query);
+    }
+
+    @ReactMethod
+    public void distanceSearch(String requestId, ReadableArray latLonPoints, ReadableMap dest, int searchType ) {
+        MyDistanceSearch request = new MyDistanceSearch(reactContext, requestId);
+        request.reactContext = reactContext;
+        List<LatLonPoint> latLonPoints1 = new ArrayList<>();
+        for (int ii = 0; ii < latLonPoints.size(); ii ++) {
+            ReadableMap latLon = latLonPoints.getMap(ii);
+            latLonPoints1.add(new LatLonPoint(latLon.getDouble("latitude"), latLon.getDouble("longitude")));
+        }
+        DistanceSearch.DistanceQuery distanceQuery = new DistanceSearch.DistanceQuery();
+        distanceQuery.setOrigins(latLonPoints1);
+        LatLonPoint destLatLon = new LatLonPoint(dest.getDouble("latitude"), dest.getDouble("longitude"));
+        distanceQuery.setDestination(destLatLon);
+        distanceQuery.setType(searchType);
+        request.distanceSearch.calculateRouteDistanceAsyn(distanceQuery);
     }
 }

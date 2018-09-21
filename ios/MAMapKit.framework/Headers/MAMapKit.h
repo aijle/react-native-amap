@@ -3,14 +3,10 @@
 //  MAMapKit
 //
 //  Created by xiaoming han on 15/12/7.
-//  Copyright © 2015年 AutoNavi. All rights reserved.
+//  Copyright © 2015年 Amap. All rights reserved.
 //
 
-#import <MAMapKit/MAMapServices.h>
-#import <MAMapKit/MAMapURLSearch.h>
-#import <MAMapKit/MAMapURLSearchConfig.h>
-#import <MAMapKit/MAMapURLSearchType.h>
-
+#import <MAMapKit/MAMapVersion.h>
 #import <MAMapKit/MAMapView.h>
 #import <MAMapKit/MAGeometry.h>
 #import <MAMapKit/MAAnnotation.h>

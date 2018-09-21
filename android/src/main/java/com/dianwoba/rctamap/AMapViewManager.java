@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.amap.api.maps2d.AMap;
+import com.amap.api.maps2d.AMapException;
 import com.amap.api.maps2d.CameraUpdate;
 import com.amap.api.maps2d.CameraUpdateFactory;
 import com.amap.api.maps2d.MapView;
@@ -183,11 +184,16 @@ public class AMapViewManager extends ViewGroupManager<AMapView> {
                 lat = region.getDouble("latitude");
                 lngDelta = region.hasKey("longitudeDelta")?region.getDouble("longitudeDelta"):0.0;
                 latDelta = region.hasKey("latitudeDelta")?region.getDouble("latitudeDelta"):0.0;
-                LatLngBounds bounds = new LatLngBounds(
-                        new LatLng(lat - latDelta / 2, lng - lngDelta / 2), // southwest
-                        new LatLng(lat + latDelta / 2, lng + lngDelta / 2)  // northeast
-                );
-                view.animateToRegion(bounds, duration);
+                LatLngBounds bounds = null;
+                try {
+                    bounds = new LatLngBounds(
+                            new LatLng(lat - latDelta / 2, lng - lngDelta / 2), // southwest
+                            new LatLng(lat + latDelta / 2, lng + lngDelta / 2)  // northeast
+                    );
+                    view.animateToRegion(bounds, duration);
+                } catch (AMapException e) {
+                    e.printStackTrace();
+                }
                 break;
 
             case ANIMATE_TO_COORDINATE:
