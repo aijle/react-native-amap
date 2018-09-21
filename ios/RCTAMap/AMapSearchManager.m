@@ -121,7 +121,7 @@ RCT_EXPORT_METHOD(regeocodeSearch:(NSString *)requestId location:(AMapGeoPoint *
     [_search AMapReGoecodeSearch:request];
 }
 
-RCT_EXPORT_METHOD(distanceSearch:(NSString *)requestId latLonPoints:(NSArray *)latLonPoints dest:(AMapGeoPoint *)dest searchType:(NSInteger)searchType)
+RCT_EXPORT_METHOD(distanceSearch:(NSString *)requestId latLonPoints:(NSArray<AMapGeoPoint*> *)latLonPoints dest:(AMapGeoPoint *)dest searchType:(NSInteger)searchType)
 {
     AMapDistanceSearchRequest *request = [[AMapDistanceSearchRequest alloc]init];
     request.origins = latLonPoints;
@@ -273,7 +273,7 @@ RCT_EXPORT_METHOD(walkingRouteSearch:(NSString *)requestId fromOrigin:(AMapGeoPo
                                 @"distance": @(obj.distance),
                                 @"duration": @(obj.duration),
                                 @"code": @(obj.code),
-                                @"info": obj.info,
+                                @"info": obj.info ?: [NSNull null],
                                 @"originId": @(obj.originID)
                                 };
             [arr addObject:n];

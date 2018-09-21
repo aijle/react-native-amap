@@ -50,6 +50,7 @@ RCT_ENUM_CONVERTER(MAUserTrackingMode, (@{
 }
 
 RCT_ARRAY_CONVERTER(AMapCoordinate)
+RCT_ARRAY_CONVERTER(AMapGeoPoint)
 
 + (AMapGeoPoint *)AMapGeoPoint:(id)json
 {
