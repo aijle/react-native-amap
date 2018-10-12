@@ -6,6 +6,7 @@ import com.amap.api.services.geocoder.GeocodeSearch;
 import com.amap.api.services.geocoder.RegeocodeQuery;
 import com.amap.api.services.help.InputtipsQuery;
 import com.amap.api.services.route.DistanceSearch;
+import com.amap.api.services.route.RouteSearch;
 import com.amap.api.services.weather.WeatherSearchQuery;
 
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -90,5 +91,39 @@ public class AMapSearchManager extends ReactContextBaseJavaModule {
         distanceQuery.setDestination(destLatLon);
         distanceQuery.setType(searchType);
         request.distanceSearch.calculateRouteDistanceAsyn(distanceQuery);
+    }
+
+    @ReactMethod
+    public void truckRouteSearch(String requestId, ReadableMap origin, ReadableMap destination, int strategy, ReadableMap options ) {
+        MyTruckRouteSearch request = new MyTruckRouteSearch(reactContext, requestId);
+        request.reactContext = reactContext;
+        RouteSearch.FromAndTo fromAndTo = new RouteSearch.FromAndTo(new LatLonPoint(origin.getDouble("latitude"), origin.getDouble("longitude")), new LatLonPoint(destination.getDouble("latitude"), destination.getDouble("longitude")));
+        int truckSize = RouteSearch.TRUCK_SIZE_LIGHT;
+        if (options.hasKey("size")) {
+            truckSize = options.getInt("size");
+        }
+        if (options.hasKey("plateProvince")) {
+            fromAndTo.setPlateProvince(options.getString("plateProvince"));
+        }
+        if (options.hasKey("plateNumber")) {
+            fromAndTo.setPlateNumber(options.getString("plateNumber"));
+        }
+        RouteSearch.TruckRouteQuery truckRouteQuery = new RouteSearch.TruckRouteQuery(fromAndTo, strategy, null, truckSize);
+        if (options.hasKey("height")) {
+            truckRouteQuery.setTruckHeight((float)options.getDouble("height"));
+        }
+        if (options.hasKey("width")) {
+            truckRouteQuery.setTruckWidth((float)options.getDouble("width"));
+        }
+        if (options.hasKey("load")) {
+            truckRouteQuery.setTruckLoad((float)options.getDouble("load"));
+        }
+        if (options.hasKey("weight")) {
+            truckRouteQuery.setTruckWeight((float)options.getDouble("weight"));
+        }
+        if (options.hasKey("axis")) {
+            truckRouteQuery.setTruckAxis((float)options.getDouble("axis"));
+        }
+        request.truckRouteSearch.calculateTruckRouteAsyn(truckRouteQuery);
     }
 }

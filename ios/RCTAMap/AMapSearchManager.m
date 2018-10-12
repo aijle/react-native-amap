@@ -142,6 +142,32 @@ RCT_EXPORT_METHOD(walkingRouteSearch:(NSString *)requestId fromOrigin:(AMapGeoPo
     
 }
 
+RCT_EXPORT_METHOD(truckRouteSearch:(NSString *)requestId fromOrigin:(AMapGeoPoint *)origin to:(AMapGeoPoint *)destination with:(NSInteger)strategy options:(NSDictionary*)options)
+{
+    AMapTruckRouteSearchRequest* request = [[AMapTruckRouteSearchRequest alloc]init];
+    request.requestId = requestId;
+    request.origin = origin;
+    request.destination = destination;
+    if (options[@"plateProvince"] != NULL)
+        request.plateProvince = options[@"plateProvince"];
+    if (options[@"plateNumber"] != NULL)
+        request.plateNumber = options[@"plateNumber"];
+    if (options[@"size"] != NULL)
+        request.size = (AMapTruckSizeType)options[@"size"];
+    if (options[@"height"] != NULL)
+        request.height = [options[@"height"] floatValue];
+    if (options[@"width"] != NULL)
+        request.width = [options[@"width"] floatValue];
+    if (options[@"load"] != NULL)
+        request.load = [options[@"load"] floatValue];
+    if (options[@"weight"] != NULL)
+        request.weight = [options[@"weight"] floatValue];
+    if (options[@"axis"] != NULL)
+        request.axis = [options[@"axis"] integerValue];
+
+    [_search AMapTruckRouteSearch:request];
+
+}
 
 //实现输入提示的回调函数
 -(void)onInputTipsSearchDone:(AMapInputTipsSearchRequest*)request response:(AMapInputTipsSearchResponse *)response
@@ -287,24 +313,149 @@ RCT_EXPORT_METHOD(walkingRouteSearch:(NSString *)requestId fromOrigin:(AMapGeoPo
 //实现路径搜索的回调函数
 - (void)onRouteSearchDone:(AMapRouteSearchBaseRequest *)request response:(AMapRouteSearchResponse *)response
 {
+    NSMutableArray *arr = [[NSMutableArray alloc] init];
     if(response.route != nil)
     {
-        
+//        NSMutableDictionary* ns = [[NSMutableDictionary alloc]initWithCapacity:0];
+//        ns[@"orgin"] = @{ @"latitude": @(response.route.origin.latitude), @"longitude": @(response.route.origin.longitude) };
+//        ns[@"destination"] = @{ @"latitude": @(response.route.destination.latitude), @"longitude": @(response.route.destination.longitude) };
+//        ns[@"taxiCost"] = @(response.route.taxiCost);
+//        NSMutableArray* paths = [[NSMutableArray alloc]initWithCapacity:response.route.paths.count];
+//        [response.route.paths enumerateObjectsUsingBlock:^(AMapPath * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+//
+//        }];
+//        ns[@"paths"] = response.route.paths;
+        NSMutableDictionary * result = [self dictionaryFromModel:response.route];
+        [result[@"paths"] enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            NSMutableDictionary* path = obj;
+            NSMutableArray* steps = path[@"steps"];
+            [steps enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                NSMutableDictionary* step = obj;
+                NSString* polyline = step[@"polyline"];
+                NSArray* points = [polyline componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@",;"]];
+                NSMutableArray* poly = [NSMutableArray arrayWithCapacity:points.count/2];
+                for (int ii = 0; ii < points.count ; ii += 2) {
+                    [poly addObject:@{
+                                      @"longitude": @([points[ii] floatValue]),
+                                      @"latitude": @([points[ii + 1] floatValue])
+                                      }];
+                }
+                step[@"polyline"] = poly;
+            }];
+        }];
+
+        [arr addObject:result];
     }
     
-    if ([request isKindOfClass:[AMapWalkingRouteSearchRequest class]]) {
-        
-    }else if ([request isKindOfClass:[AMapTransitRouteSearchRequest class]]) {
-        
-    }else if ([request isKindOfClass:[AMapDrivingRouteSearchRequest class]]) {
-        
-    }
-    
+//    if ([request isKindOfClass:[AMapWalkingRouteSearchRequest class]]) {
+//
+//    }else if ([request isKindOfClass:[AMapTransitRouteSearchRequest class]]) {
+//
+//    }else if ([request isKindOfClass:[AMapDrivingRouteSearchRequest class]]) {
+//
+//    }else if ([request isKindOfClass:[AMapRidingRouteSearchRequest class]]) {
+//
+//    }else if ([request isKindOfClass:[AMapTruckRouteSearchRequest class]]) {
+//
+//    }
+
     //通过AMapNavigationSearchResponse对象处理搜索结果
     [self.bridge.eventDispatcher sendAppEventWithName:@"ReceiveAMapSearchResult" body:@{
-                                                                                        @"requestId":request.requestId, @"data":@[]}];
+                                                                                        @"requestId":request.requestId, @"data":arr}];
 }
 
+- (NSMutableDictionary *)dictionaryFromModel:(id)obj
+{
+    unsigned int count = 0;
+
+    objc_property_t *properties = class_copyPropertyList([obj class], &count);
+    NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithCapacity:count];
+
+    for (int i = 0; i < count; i++) {
+        NSString *key = [NSString stringWithUTF8String:property_getName(properties[i])];
+        id value = [obj valueForKey:key];
+
+        //only add it to dictionary if it is not nil
+        if (key && value) {
+            if ([value isKindOfClass:[NSString class]]
+                || [value isKindOfClass:[NSNumber class]]) {
+                // 普通类型的直接变成字典的值
+                [dict setObject:value forKey:key];
+            }
+            else if ([value isKindOfClass:[NSArray class]]
+                     || [value isKindOfClass:[NSDictionary class]]) {
+                // 数组类型或字典类型
+                [dict setObject:[self idFromObject:value] forKey:key];
+            }
+            else {
+                // 如果model里有其他自定义模型，则递归将其转换为字典
+                [dict setObject:[self dictionaryFromModel:value] forKey:key];
+            }
+        } else if (key && value == nil) {
+            // 如果当前对象该值为空，设为nil。在字典中直接加nil会抛异常，需要加NSNull对象
+            [dict setObject:[NSNull null] forKey:key];
+        }
+    }
+
+    free(properties);
+    return dict;
+}
+
+- (id)idFromObject:(nonnull id)object
+{
+    if ([object isKindOfClass:[NSArray class]]) {
+        if (object != nil && [object count] > 0) {
+            NSMutableArray *array = [NSMutableArray array];
+            for (id obj in object) {
+                // 基本类型直接添加
+                if ([obj isKindOfClass:[NSString class]]
+                    || [obj isKindOfClass:[NSNumber class]]) {
+                    [array addObject:obj];
+                }
+                // 字典或数组需递归处理
+                else if ([obj isKindOfClass:[NSDictionary class]]
+                         || [obj isKindOfClass:[NSArray class]]) {
+                    [array addObject:[self idFromObject:obj]];
+                }
+                // model转化为字典
+                else {
+                    [array addObject:[self dictionaryFromModel:obj]];
+                }
+            }
+            return array;
+        }
+        else {
+            return object ? : [NSNull null];
+        }
+    }
+    else if ([object isKindOfClass:[NSDictionary class]]) {
+        if (object && [[object allKeys] count] > 0) {
+            NSMutableDictionary *dic = [NSMutableDictionary dictionary];
+            for (NSString *key in [object allKeys]) {
+                // 基本类型直接添加
+                if ([object[key] isKindOfClass:[NSNumber class]]
+                    || [object[key] isKindOfClass:[NSString class]]) {
+                    [dic setObject:object[key] forKey:key];
+                }
+                // 字典或数组需递归处理
+                else if ([object[key] isKindOfClass:[NSArray class]]
+                         || [object[key] isKindOfClass:[NSDictionary class]]) {
+                    [dic setObject:[self idFromObject:object[key]] forKey:key];
+                }
+                // model转化为字典
+                else {
+                    [dic setObject:[self dictionaryFromModel:object[key]] forKey:key];
+                }
+            }
+            return dic;
+        }
+        else {
+            return object ? : [NSNull null];
+        }
+    }
+
+    return [NSNull null];
+}
 
 -(void)AMapSearchRequest:(id)request didFailWithError:(NSError *)error
 {
