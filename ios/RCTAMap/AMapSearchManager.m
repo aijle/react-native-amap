@@ -142,6 +142,18 @@ RCT_EXPORT_METHOD(walkingRouteSearch:(NSString *)requestId fromOrigin:(AMapGeoPo
     
 }
 
+RCT_EXPORT_METHOD(drivingRouteSearch:(NSString *)requestId fromOrigin:(AMapGeoPoint *)origin to:(AMapGeoPoint *)destination with:(NSInteger)strategy)
+{
+    AMapDrivingRouteSearchRequest *request = [[AMapDrivingRouteSearchRequest alloc]init];
+    request.requestId = requestId;
+    request.origin = origin;
+    request.destination = destination;
+    request.requireExtension = YES;
+
+    [_search AMapDrivingRouteSearch:request];
+
+}
+
 RCT_EXPORT_METHOD(truckRouteSearch:(NSString *)requestId fromOrigin:(AMapGeoPoint *)origin to:(AMapGeoPoint *)destination with:(NSInteger)strategy options:(NSDictionary*)options)
 {
     AMapTruckRouteSearchRequest* request = [[AMapTruckRouteSearchRequest alloc]init];

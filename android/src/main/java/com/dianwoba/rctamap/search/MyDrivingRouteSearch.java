@@ -3,33 +3,39 @@ package com.dianwoba.rctamap.search;
 import android.content.Context;
 
 import com.amap.api.services.core.LatLonPoint;
-import com.amap.api.services.route.DistanceItem;
-import com.amap.api.services.route.DistanceResult;
-import com.amap.api.services.route.DistanceSearch;
+import com.amap.api.services.route.BusRouteResult;
+import com.amap.api.services.route.DrivePath;
+import com.amap.api.services.route.DriveRouteResult;
+import com.amap.api.services.route.DriveStep;
+import com.amap.api.services.route.RideRouteResult;
 import com.amap.api.services.route.RouteSearch;
-import com.amap.api.services.route.TruckPath;
-import com.amap.api.services.route.TruckRouteRestult;
-import com.amap.api.services.route.TruckStep;
+import com.amap.api.services.route.WalkRouteResult;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 
-import java.util.List;
-
 /**
  * Created by marshal on 16/6/7.
  */
-class MyTruckRouteSearch extends AMapSearch implements RouteSearch.OnTruckRouteSearchListener {
-    public RouteSearch truckRouteSearch;
+class MyDrivingRouteSearch extends AMapSearch implements RouteSearch.OnRouteSearchListener {
+    public RouteSearch routeSearch;
 
-    public MyTruckRouteSearch(Context context, String requestId) {
-        truckRouteSearch = new RouteSearch(context);
-        truckRouteSearch.setOnTruckRouteSearchListener(this);
+    public MyDrivingRouteSearch(Context context, String requestId) {
+        routeSearch = new RouteSearch(context);
+        routeSearch.setRouteSearchListener(this);
         this.setRequestId(requestId);
     }
 
     @Override
-    public void onTruckRouteSearched(TruckRouteRestult truckRouteRestult, int resultId) {
+    public void onBusRouteSearched(BusRouteResult busRouteResult, int resultId) {
+        if (1000 != resultId) {
+            this.sendEventWithError("request distance error");
+            return;
+        }
+    }
+
+    @Override
+    public void onDriveRouteSearched(DriveRouteResult driveRouteResult, int resultId) {
         if (1000 != resultId) {
             this.sendEventWithError("request distance error");
             return;
@@ -40,19 +46,19 @@ class MyTruckRouteSearch extends AMapSearch implements RouteSearch.OnTruckRouteS
         WritableMap map = Arguments.createMap();
 
         WritableMap origin = Arguments.createMap();
-        origin.putDouble("latitude", truckRouteRestult.getStartPos().getLatitude());
-        origin.putDouble("longitude", truckRouteRestult.getStartPos().getLongitude());
+        origin.putDouble("latitude", driveRouteResult.getStartPos().getLatitude());
+        origin.putDouble("longitude", driveRouteResult.getStartPos().getLongitude());
         map.putMap("origin", origin);
 
         WritableMap destination = Arguments.createMap();
-        destination.putDouble("latitude", truckRouteRestult.getTargetPos().getLatitude());
-        destination.putDouble("longitude", truckRouteRestult.getTargetPos().getLongitude());
+        destination.putDouble("latitude", driveRouteResult.getTargetPos().getLatitude());
+        destination.putDouble("longitude", driveRouteResult.getTargetPos().getLongitude());
         map.putMap("destination", destination);
 
-        if (truckRouteRestult.getPaths() != null) {
+        if (driveRouteResult.getPaths() != null) {
             WritableArray paths = Arguments.createArray();
 
-            for (TruckPath path: truckRouteRestult.getPaths()
+            for (DrivePath path: driveRouteResult.getPaths()
                     ) {
                 WritableMap pathw = Arguments.createMap();
 
@@ -66,7 +72,7 @@ class MyTruckRouteSearch extends AMapSearch implements RouteSearch.OnTruckRouteS
 
                 WritableArray steps = Arguments.createArray();
 
-                for (TruckStep step: path.getSteps()
+                for (DriveStep step: path.getSteps()
                         ) {
                     WritableMap stepw = Arguments.createMap();
 
@@ -110,5 +116,21 @@ class MyTruckRouteSearch extends AMapSearch implements RouteSearch.OnTruckRouteS
 
         arrray.pushMap(map);
         this.sendEventWithData(arrray);
+    }
+
+    @Override
+    public void onWalkRouteSearched(WalkRouteResult walkRouteResult, int resultId) {
+        if (1000 != resultId) {
+            this.sendEventWithError("request distance error");
+            return;
+        }
+    }
+
+    @Override
+    public void onRideRouteSearched(RideRouteResult rideRouteResult, int resultId) {
+        if (1000 != resultId) {
+            this.sendEventWithError("request distance error");
+            return;
+        }
     }
 }

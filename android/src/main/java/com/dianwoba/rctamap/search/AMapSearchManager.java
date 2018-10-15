@@ -126,4 +126,14 @@ public class AMapSearchManager extends ReactContextBaseJavaModule {
         }
         request.truckRouteSearch.calculateTruckRouteAsyn(truckRouteQuery);
     }
+
+    @ReactMethod
+    public void drivingRouteSearch(String requestId, ReadableMap origin, ReadableMap destination, int strategy) {
+        MyDrivingRouteSearch request = new MyDrivingRouteSearch(reactContext, requestId);
+        request.reactContext = reactContext;
+        RouteSearch.FromAndTo fromAndTo = new RouteSearch.FromAndTo(new LatLonPoint(origin.getDouble("latitude"), origin.getDouble("longitude")), new LatLonPoint(destination.getDouble("latitude"), destination.getDouble("longitude")));
+
+        RouteSearch.DriveRouteQuery query = new RouteSearch.DriveRouteQuery(fromAndTo, strategy, null, null, "");
+        request.routeSearch.calculateDriveRouteAsyn(query);
+    }
 }
