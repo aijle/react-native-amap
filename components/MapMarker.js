@@ -18,8 +18,6 @@ var resolveAssetSource = require("react-native/Libraries/Image/resolveAssetSourc
 var AMapMarker = requireNativeComponent("AMapMarker", MapMarker)
 
 var MapMarker = createClass({
-    mixins: [NativeMethodsMixin],
-
     viewConfig: {
         uiViewClassName: "AMapMarker",
         validAttributes: {

@@ -11,8 +11,6 @@ var {
 } = ReactNative;
 var createClass = require('create-react-class');
 var MapPolyline = createClass({
-  mixins: [NativeMethodsMixin],
-
   propTypes: {
     ...ViewPropTypes,
 

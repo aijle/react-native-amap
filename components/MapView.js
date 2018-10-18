@@ -22,8 +22,6 @@ var MapCircle = require('./MapCircle');
 var MapCallout = require('./MapCallout');
 var createClass = require('create-react-class');
 var MapView = createClass({
-  mixins: [NativeMethodsMixin],
-
   viewConfig: {
     uiViewClassName: 'AMap',
     validAttributes: {

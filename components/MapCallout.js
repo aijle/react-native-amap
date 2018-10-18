@@ -12,8 +12,6 @@ var {
 } = ReactNative;
 var createClass = require('create-react-class');
 var MapCallout = createClass({
-  mixins: [NativeMethodsMixin],
-
   propTypes: {
     ...ViewPropTypes,
     tooltip: PropTypes.bool,

@@ -13,8 +13,6 @@ var {
 var createClass = require('create-react-class');
 
 var MapCircle = createClass({
-  mixins: [NativeMethodsMixin],
-
   propTypes: {
     ...ViewPropTypes,
 
