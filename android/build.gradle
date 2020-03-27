@@ -23,7 +23,7 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.3'
+        classpath 'com.android.tools.build:gradle:3.4.1'
     }
 }
 
@@ -40,7 +40,9 @@ allprojects {
 
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:27.0.1'
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.facebook.react:react-native:+'
+    implementation 'com.android.support:appcompat-v7:27.0.1'
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'com.facebook.react:react-native:+'
+    implementation 'com.amap.api:map2d:latest.integration'
+    implementation 'com.amap.api:search:latest.integration'
 }

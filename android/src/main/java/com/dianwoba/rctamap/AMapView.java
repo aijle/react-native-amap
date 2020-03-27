@@ -3,8 +3,8 @@ package com.dianwoba.rctamap;
 import android.content.pm.PackageManager;
 import android.graphics.Point;
 import android.os.Handler;
-import android.support.v4.view.GestureDetectorCompat;
-import android.support.v4.view.MotionEventCompat;
+import androidx.core.view.GestureDetectorCompat;
+import androidx.core.view.MotionEventCompat;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -40,7 +40,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static android.support.v4.content.PermissionChecker.checkSelfPermission;
+import static androidx.core.content.PermissionChecker.checkSelfPermission;
 
 public class AMapView extends MapView implements AMap.InfoWindowAdapter,
         AMap.OnMarkerDragListener, AMap.OnMapLoadedListener {

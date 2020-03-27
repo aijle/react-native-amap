@@ -2,6 +2,8 @@
 
 var React = require('react');
 var PropTypes = require('prop-types');
+var createClass = require('create-react-class');
+
 var ReactNative = require('react-native');
 var {
   EdgeInsetsPropType,
@@ -20,8 +22,10 @@ var MapPolyline = require('./MapPolyline');
 var MapPolygon = require('./MapPolygon');
 var MapCircle = require('./MapCircle');
 var MapCallout = require('./MapCallout');
-var createClass = require('create-react-class');
+
 var MapView = createClass({
+  mixins: [NativeMethodsMixin],
+
   viewConfig: {
     uiViewClassName: 'AMap',
     validAttributes: {
@@ -30,9 +34,9 @@ var MapView = createClass({
   },
 
   propTypes: {
-      ...ViewPropTypes,
+      ...View.propTypes,
 
-      style: ViewPropTypes.style,
+      style: ViewPropTypes,
 
       /**
        * [apiKey amap's apiKey]

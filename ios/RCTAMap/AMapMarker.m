@@ -208,7 +208,7 @@
         _reloadImageCancellationBlock();
         _reloadImageCancellationBlock = nil;
     }
-    _reloadImageCancellationBlock = [_bridge.imageLoader loadImageWithURLRequest:[RCTConvert NSURLRequest:_imageSrc]
+    _reloadImageCancellationBlock = [[_bridge moduleForName:@"ImageLoader" lazilyLoadIfNecessary:YES] loadImageWithURLRequest:[RCTConvert NSURLRequest:_imageSrc]
                                                                             size:self.bounds.size
                                                                            scale:RCTScreenScale()
                                                                          clipped:YES

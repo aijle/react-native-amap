@@ -5,6 +5,7 @@ import com.amap.api.services.geocoder.GeocodeQuery;
 import com.amap.api.services.geocoder.GeocodeSearch;
 import com.amap.api.services.geocoder.RegeocodeQuery;
 import com.amap.api.services.help.InputtipsQuery;
+import com.amap.api.services.poisearch.PoiSearch;
 import com.amap.api.services.route.DistanceSearch;
 import com.amap.api.services.route.RouteSearch;
 import com.amap.api.services.weather.WeatherSearchQuery;
@@ -136,4 +137,51 @@ public class AMapSearchManager extends ReactContextBaseJavaModule {
         RouteSearch.DriveRouteQuery query = new RouteSearch.DriveRouteQuery(fromAndTo, strategy, null, null, "");
         request.routeSearch.calculateDriveRouteAsyn(query);
     }
+
+    @ReactMethod
+    public void walkingRouteSearch(String requestId, ReadableMap origin, ReadableMap destination) {
+        MyDrivingRouteSearch request = new MyDrivingRouteSearch(reactContext, requestId);
+        request.reactContext = reactContext;
+        RouteSearch.FromAndTo fromAndTo = new RouteSearch.FromAndTo(new LatLonPoint(origin.getDouble("latitude"), origin.getDouble("longitude")), new LatLonPoint(destination.getDouble("latitude"), destination.getDouble("longitude")));
+
+        RouteSearch.WalkRouteQuery query = new RouteSearch.WalkRouteQuery(fromAndTo);
+        request.routeSearch.calculateWalkRouteAsyn(query);
+    }
+
+    @ReactMethod
+    public void ridingRouteSearch(String requestId, ReadableMap origin, ReadableMap destination) {
+        MyDrivingRouteSearch request = new MyDrivingRouteSearch(reactContext, requestId);
+        request.reactContext = reactContext;
+        RouteSearch.FromAndTo fromAndTo = new RouteSearch.FromAndTo(new LatLonPoint(origin.getDouble("latitude"), origin.getDouble("longitude")), new LatLonPoint(destination.getDouble("latitude"), destination.getDouble("longitude")));
+
+        RouteSearch.RideRouteQuery query = new RouteSearch.RideRouteQuery(fromAndTo);
+        request.routeSearch.calculateRideRouteAsyn(query);
+    }
+
+  @ReactMethod
+  public void transitRouteSearch(String requestId, ReadableMap origin, ReadableMap destination, String city, int strategy) {
+    MyDrivingRouteSearch request = new MyDrivingRouteSearch(reactContext, requestId);
+    request.reactContext = reactContext;
+    RouteSearch.FromAndTo fromAndTo = new RouteSearch.FromAndTo(new LatLonPoint(origin.getDouble("latitude"), origin.getDouble("longitude")), new LatLonPoint(destination.getDouble("latitude"), destination.getDouble("longitude")));
+
+    RouteSearch.BusRouteQuery query = new RouteSearch.BusRouteQuery(fromAndTo, strategy, city, 0);
+    request.routeSearch.calculateBusRouteAsyn(query);
+  }
+
+  @ReactMethod
+  public void poiAroundSearch(String requestId, ReadableMap options) {
+    PoiSearch.Query query = new PoiSearch.Query(options.getString("keywords"), options.getString("types"));
+    query.setPageNum(options.getInt("offset"));
+    query.setPageSize(options.getInt("page"));
+
+    MyPoiSearch request = new MyPoiSearch(reactContext, requestId, query);
+    request.reactContext = reactContext;
+    request.poiSearch.setBound(new PoiSearch.SearchBound(new LatLonPoint(options.getMap("location").getDouble("latitude"), options.getMap("location").getDouble("longitude")), options.getInt("radius")));
+      request.poiSearch.searchPOIAsyn();
+  }
+
+  @ReactMethod
+  public void setApiKey(String apiKey) {
+
+  }
 }

@@ -1,5 +1,6 @@
 var React = require('react');
 var PropTypes = require('prop-types');
+var createClass = require('create-react-class');
 
 var ReactNative = require('react-native');
 var {
@@ -7,12 +8,13 @@ var {
   NativeMethodsMixin,
   requireNativeComponent,
   StyleSheet,
-  ViewPropTypes
 } = ReactNative;
-var createClass = require('create-react-class');
+
 var MapPolyline = createClass({
+  mixins: [NativeMethodsMixin],
+
   propTypes: {
-    ...ViewPropTypes,
+    ...View.propTypes,
 
     /**
      * An array of coordinates to describe the polygon

@@ -60,23 +60,21 @@ RCT_EXPORT_MODULE();
 //    [_search AMapPOIKeywordsSearch:request];
 //}
 //
-//RCT_EXPORT_METHOD(poiAroundSearch:(NSString *)requestId options:(NSDictionary *)options)
-//{
-//    AMapPOIAroundSearchRequest *request = [[AMapPOIAroundSearchRequest alloc]init];
-//    request.keywords = options[@"keywords"];
-//    request.radius = options[@"radius"];
-//    NSDictionary *location = options[@"location"];
-//    CGFloat lat = location[@"latitude"];
-//    request.location = [AMapGeoPoint locationWithLatitude:location[@"latitude"] longitude:(CGFloat)location[@"longitude"]]
-//    
-//    request.types = options[@"types"];
-//    request.page = options[@"page"];
-//    request.offset = options[@"offset"];
-//
-//    
-//    [_search AMapPOIAroundSearch:request];
-//}
+RCT_EXPORT_METHOD(poiAroundSearch:(NSString *)requestId options:(NSDictionary *)options)
+{
+    AMapPOIAroundSearchRequest *request = [[AMapPOIAroundSearchRequest alloc]init];
+    request.keywords = options[@"keywords"];
+    request.radius = [options[@"radius"] integerValue] ;
+    NSDictionary *location = options[@"location"];
+    request.location = [AMapGeoPoint locationWithLatitude:[location[@"latitude"] floatValue] longitude:[location[@"longitude"] floatValue]];
 
+    request.types = options[@"types"];
+    request.page = [options[@"page"] integerValue];
+    request.offset = [options[@"offset"] integerValue];
+    request.requestId = requestId;
+
+    [_search AMapPOIAroundSearch:request];
+}
 
 RCT_EXPORT_METHOD(setApiKey:(NSString *)apiKey){
     [AMapServices sharedServices].apiKey = apiKey;
@@ -99,6 +97,7 @@ RCT_EXPORT_METHOD(weatherSearch:(NSString *)requestId city:(NSString *)city isLi
     request.city = city;
     request.type = isLive? AMapWeatherTypeLive: AMapWeatherTypeForecast;
     request.requestId = requestId;
+
     [_search AMapWeatherSearch:request];
 }
 
@@ -108,6 +107,7 @@ RCT_EXPORT_METHOD(geocodeSearch:(NSString *)requestId address:(NSString *)addres
     request.address = address;
     request.city = city;
     request.requestId = requestId;
+
     [_search AMapGeocodeSearch:request];
 }
 
@@ -118,6 +118,7 @@ RCT_EXPORT_METHOD(regeocodeSearch:(NSString *)requestId location:(AMapGeoPoint *
     request.radius = radius? radius: 1000;
     request.requireExtension = NO;
     request.requestId = requestId;
+
     [_search AMapReGoecodeSearch:request];
 }
 
@@ -128,10 +129,11 @@ RCT_EXPORT_METHOD(distanceSearch:(NSString *)requestId latLonPoints:(NSArray<AMa
     request.destination = dest;
     request.type = searchType;
     request.requestId = requestId;
+
     [_search AMapDistanceSearch:request];
 }
 
-RCT_EXPORT_METHOD(walkingRouteSearch:(NSString *)requestId fromOrigin:(AMapGeoPoint *)origin to:(AMapGeoPoint *)destination with:(NSInteger)strategy)
+RCT_EXPORT_METHOD(walkingRouteSearch:(NSString *)requestId fromOrigin:(AMapGeoPoint *)origin to:(AMapGeoPoint *)destination)
 {
     AMapWalkingRouteSearchRequest *request = [[AMapWalkingRouteSearchRequest alloc]init];
     request.requestId = requestId;
@@ -142,16 +144,40 @@ RCT_EXPORT_METHOD(walkingRouteSearch:(NSString *)requestId fromOrigin:(AMapGeoPo
     
 }
 
+RCT_EXPORT_METHOD(ridingRouteSearch:(NSString *)requestId fromOrigin:(AMapGeoPoint *)origin to:(AMapGeoPoint *)destination)
+{
+    AMapRidingRouteSearchRequest *request = [[AMapRidingRouteSearchRequest alloc]init];
+    request.requestId = requestId;
+    request.origin = origin;
+    request.destination = destination;
+
+    [_search AMapRidingRouteSearch:request];
+
+}
+
 RCT_EXPORT_METHOD(drivingRouteSearch:(NSString *)requestId fromOrigin:(AMapGeoPoint *)origin to:(AMapGeoPoint *)destination with:(NSInteger)strategy)
 {
     AMapDrivingRouteSearchRequest *request = [[AMapDrivingRouteSearchRequest alloc]init];
     request.requestId = requestId;
     request.origin = origin;
     request.destination = destination;
+    request.strategy = strategy;
     request.requireExtension = YES;
 
     [_search AMapDrivingRouteSearch:request];
+}
 
+RCT_EXPORT_METHOD(transitRouteSearch:(NSString *)requestId fromOrigin:(AMapGeoPoint *)origin to:(AMapGeoPoint *)destination city:(NSString*)city with:(NSInteger)strategy)
+{
+    AMapTransitRouteSearchRequest *request = [[AMapTransitRouteSearchRequest alloc]init];
+    request.requestId = requestId;
+    request.origin = origin;
+    request.destination = destination;
+    request.city = city;
+    request.strategy = strategy;
+    request.requireExtension = YES;
+
+    [_search AMapTransitRouteSearch:request];
 }
 
 RCT_EXPORT_METHOD(truckRouteSearch:(NSString *)requestId fromOrigin:(AMapGeoPoint *)origin to:(AMapGeoPoint *)destination with:(NSInteger)strategy options:(NSDictionary*)options)
@@ -207,6 +233,60 @@ RCT_EXPORT_METHOD(truckRouteSearch:(NSString *)requestId fromOrigin:(AMapGeoPoin
              };
 }
 
+-(void)onPOISearchDone:(AMapPOISearchBaseRequest *)request response:(AMapPOISearchResponse *)response {
+
+    NSMutableArray *arr = [[NSMutableArray alloc] init];
+    [response.pois enumerateObjectsUsingBlock:^(AMapPOI * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        NSMutableArray* images = [[NSMutableArray alloc] initWithCapacity: obj.images.count];
+        [obj.images enumerateObjectsUsingBlock:^(AMapImage * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            [images addObject:@{
+                @"url": obj.url,
+                @"title": obj.title
+            }];
+        }];
+
+        [arr addObject:@{
+            @"uid": obj.uid,
+            @"name": obj.name,
+            @"type": obj.type,
+            @"typecode": obj.typecode,
+            @"location": @{
+                    @"longitude": @(obj.location.longitude),
+                    @"latitude": @(obj.location.latitude)
+            },
+            @"address": obj.address,
+            @"tel": obj.tel,
+            @"distance": @(obj.distance),
+            @"parkingType": obj.parkingType,
+            @"shopID": obj.shopID,
+            @"postcode": obj.postcode,
+            @"website": obj.website,
+            @"email": obj.email,
+            @"province": obj.province,
+            @"pcode": obj.pcode,
+            @"city": obj.city,
+            @"citycode": obj.citycode,
+            @"district": obj.district,
+            @"adcode": obj.adcode,
+            @"gridcode": obj.gridcode,
+            @"enterLocation": @{
+                    @"longitude": @(obj.enterLocation.longitude),
+                    @"latitude": @(obj.enterLocation.latitude)
+            },
+            @"exitLocation": @{
+                    @"longitude": @(obj.exitLocation.longitude),
+                    @"latitude": @(obj.exitLocation.latitude)
+            },
+            @"direction": obj.direction,
+            @"hasIndoorMap": @(obj.hasIndoorMap),
+            @"businessArea": obj.businessArea,
+            @"images": images
+        }];
+    }];
+
+    [self.bridge.eventDispatcher sendAppEventWithName:@"ReceiveAMapSearchResult" body:@{
+    @"requestId":request.requestId, @"data":arr}];
+}
 //实现天气查询的回调函数
 - (void)onWeatherSearchDone:(AMapWeatherSearchRequest *)request response:(AMapWeatherSearchResponse *)response
 {
@@ -322,67 +402,69 @@ RCT_EXPORT_METHOD(truckRouteSearch:(NSString *)requestId fromOrigin:(AMapGeoPoin
                                                                                         @"requestId":request.requestId, @"data":arr}];
 }
 
+-(NSMutableArray*)polylineFromStr:(NSString*)polyline {
+    NSArray* points = [polyline componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@",;"]];
+    NSMutableArray* poly = [NSMutableArray arrayWithCapacity:points.count/2];
+    for (int ii = 0; ii < points.count ; ii += 2) {
+        [poly addObject:@{
+                          @"longitude": @([points[ii] floatValue]),
+                          @"latitude": @([points[ii + 1] floatValue])
+                          }];
+    }
+    return poly;
+}
+
 //实现路径搜索的回调函数
 - (void)onRouteSearchDone:(AMapRouteSearchBaseRequest *)request response:(AMapRouteSearchResponse *)response
 {
     NSMutableArray *arr = [[NSMutableArray alloc] init];
     if(response.route != nil)
     {
-//        NSMutableDictionary* ns = [[NSMutableDictionary alloc]initWithCapacity:0];
-//        ns[@"orgin"] = @{ @"latitude": @(response.route.origin.latitude), @"longitude": @(response.route.origin.longitude) };
-//        ns[@"destination"] = @{ @"latitude": @(response.route.destination.latitude), @"longitude": @(response.route.destination.longitude) };
-//        ns[@"taxiCost"] = @(response.route.taxiCost);
-//        NSMutableArray* paths = [[NSMutableArray alloc]initWithCapacity:response.route.paths.count];
-//        [response.route.paths enumerateObjectsUsingBlock:^(AMapPath * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-//
-//        }];
-//        ns[@"paths"] = response.route.paths;
         NSMutableDictionary * result = [self dictionaryFromModel:response.route];
         [result[@"paths"] enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             NSMutableDictionary* path = obj;
             NSMutableArray* steps = path[@"steps"];
             [steps enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                 NSMutableDictionary* step = obj;
-                NSString* polyline = step[@"polyline"];
-                NSArray* points = [polyline componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@",;"]];
-                NSMutableArray* poly = [NSMutableArray arrayWithCapacity:points.count/2];
-                for (int ii = 0; ii < points.count ; ii += 2) {
-                    [poly addObject:@{
-                                      @"longitude": @([points[ii] floatValue]),
-                                      @"latitude": @([points[ii + 1] floatValue])
-                                      }];
+                step[@"polyline"] = [self polylineFromStr:step[@"polyline"]];
+            }];
+        }];
+        [result[@"transits"] enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            NSMutableDictionary* path = obj;
+            NSMutableArray* segments = path[@"segments"];
+            [segments enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                NSMutableDictionary* segment = obj;
+                NSMutableArray* buslines = segment[@"buslines"];
+                [buslines enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                    NSMutableDictionary* busline = obj;
+                    busline[@"polyline"] = [self polylineFromStr:busline[@"polyline"]];
+                }];
+                NSMutableDictionary* walking = segment[@"walking"];
+                if (walking) {
+                    NSMutableArray* steps = walking[@"steps"];
+                    [steps enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                        NSMutableDictionary* step = obj;
+                        step[@"polyline"] = [self polylineFromStr:step[@"polyline"]];
+                    }];
                 }
-                step[@"polyline"] = poly;
             }];
         }];
 
         [arr addObject:result];
     }
-    
-//    if ([request isKindOfClass:[AMapWalkingRouteSearchRequest class]]) {
-//
-//    }else if ([request isKindOfClass:[AMapTransitRouteSearchRequest class]]) {
-//
-//    }else if ([request isKindOfClass:[AMapDrivingRouteSearchRequest class]]) {
-//
-//    }else if ([request isKindOfClass:[AMapRidingRouteSearchRequest class]]) {
-//
-//    }else if ([request isKindOfClass:[AMapTruckRouteSearchRequest class]]) {
-//
-//    }
 
     //通过AMapNavigationSearchResponse对象处理搜索结果
     [self.bridge.eventDispatcher sendAppEventWithName:@"ReceiveAMapSearchResult" body:@{
                                                                                         @"requestId":request.requestId, @"data":arr}];
 }
-
+        
 - (NSMutableDictionary *)dictionaryFromModel:(id)obj
 {
     unsigned int count = 0;
-
+        
     objc_property_t *properties = class_copyPropertyList([obj class], &count);
     NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithCapacity:count];
-
+        
     for (int i = 0; i < count; i++) {
         NSString *key = [NSString stringWithUTF8String:property_getName(properties[i])];
         id value = [obj valueForKey:key];
@@ -408,7 +490,7 @@ RCT_EXPORT_METHOD(truckRouteSearch:(NSString *)requestId fromOrigin:(AMapGeoPoin
             [dict setObject:[NSNull null] forKey:key];
         }
     }
-
+    
     free(properties);
     return dict;
 }

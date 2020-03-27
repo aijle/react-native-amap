@@ -2,6 +2,8 @@
 
 var React = require("react")
 var PropTypes = require('prop-types');
+var createClass = require('create-react-class');
+
 var ReactNative = require("react-native")
 var {
     View,
@@ -11,13 +13,14 @@ var {
     Platform,
     NativeModules,
     Animated,
-    ViewPropTypes
 } = ReactNative
-var createClass = require('create-react-class');
+
 var resolveAssetSource = require("react-native/Libraries/Image/resolveAssetSource")
 var AMapMarker = requireNativeComponent("AMapMarker", MapMarker)
 
 var MapMarker = createClass({
+    mixins: [NativeMethodsMixin],
+
     viewConfig: {
         uiViewClassName: "AMapMarker",
         validAttributes: {
@@ -26,7 +29,7 @@ var MapMarker = createClass({
     },
 
     propTypes: {
-        ...ViewPropTypes,
+        ...View.propTypes,
 
         // TODO(lmr): get rid of these?
         identifier: PropTypes.string,

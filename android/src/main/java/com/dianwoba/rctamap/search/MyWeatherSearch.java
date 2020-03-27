@@ -38,7 +38,7 @@ class MyWeatherSearch extends AMapSearch implements WeatherSearch.OnWeatherSearc
 
         map.putString("city", live.getCity());
         map.putString("province", live.getProvince());
-        map.putString("adCode", live.getAdCode());
+        map.putString("adcode", live.getAdCode());
         map.putString("weather", live.getWeather());
         map.putString("temperature", live.getTemperature());
         map.putString("windDirection", live.getWindDirection());
@@ -65,7 +65,7 @@ class MyWeatherSearch extends AMapSearch implements WeatherSearch.OnWeatherSearc
         map.putString("city", forecast.getCity());
         map.putString("city", forecast.getCity());
         map.putString("province", forecast.getProvince());
-        map.putString("adCode", forecast.getAdCode());
+        map.putString("adcode", forecast.getAdCode());
         map.putString("reportTime", forecast.getReportTime());
 
         WritableArray casts = Arguments.createArray();
